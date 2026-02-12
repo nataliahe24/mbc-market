@@ -69,9 +69,25 @@ export default async function Home() {
         )}
       </main>
 
-      <footer className="border-t py-6 text-center text-xs text-stone-400">
-        &copy; 2025 MBC Marketplace. Todos los derechos
-        reservados.
+      <footer className="border-t py-6 text-center text-xs text-stone-400 space-y-2">
+        <div className="flex justify-center gap-4">
+          <a
+            href="/privacy"
+            className="hover:text-stone-700 underline"
+          >
+            Política de Privacidad
+          </a>
+          <a
+            href="/my-data"
+            className="hover:text-stone-700 underline"
+          >
+            Mis Datos
+          </a>
+        </div>
+        <p>
+          &copy; 2025 MBC Marketplace. Todos los derechos
+          reservados.
+        </p>
       </footer>
     </>
   );

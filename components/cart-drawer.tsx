@@ -45,6 +45,7 @@ export function CartDrawer({ open, onClose }: Props) {
       items,
       paymentMethod: fd.get("paymentMethod") as string,
       total,
+      consentGiven: true,
     };
 
     try {
@@ -211,7 +212,30 @@ export function CartDrawer({ open, onClose }: Props) {
                 </label>
               </fieldset>
 
-              <div className="flex justify-between font-bold text-lg pt-2 border-t">
+              {/* Consentimiento de datos */}
+              <label className="flex items-start gap-2 text-xs text-stone-600 pt-2 border-t">
+                <input
+                  type="checkbox"
+                  name="consent"
+                  required
+                  className="accent-red-600 mt-0.5"
+                />
+                <span>
+                  Autorizo el tratamiento de mis datos personales
+                  para gestionar mi pedido, realizar la entrega y
+                  contactarme según la{" "}
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    className="text-red-600 underline"
+                  >
+                    política de privacidad
+                  </a>
+                  .
+                </span>
+              </label>
+
+              <div className="flex justify-between font-bold text-lg pt-2">
                 <span>Total</span>
                 <span className="text-red-700">
                   ${total.toLocaleString()}
