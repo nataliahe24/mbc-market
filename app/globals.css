@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #dc2626;
+  --color-primary-hover: #b91c1c;
+  --color-accent: #991b1b;
+  --color-surface: #fef2f2;
+  --color-muted: #78716c;
+}
+
+body {
+  background-color: #fafaf9;
+  color: #1c1917;
+}
+
+/* Drawer animation */
+.drawer-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+.drawer-panel {
+  animation: slideIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
