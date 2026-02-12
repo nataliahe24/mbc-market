@@ -22,7 +22,7 @@ export default function AdminPage() {
   const [modal, setModal] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [orders, setOrders] = useState<
-    { _id: string; customer: { name: string }; total: number; createdAt: string }[]
+    { _id: string; customer: { name: string; phone: string; address: string }; total: number; createdAt: string }[]
   >([]);
 
   async function fetchProducts() {
@@ -192,6 +192,12 @@ export default function AdminPage() {
                 <thead className="bg-stone-50 text-left text-stone-500">
                   <tr>
                     <th className="px-4 py-3">Cliente</th>
+                    <th className="px-4 py-3 hidden md:table-cell">
+                      Celular
+                    </th>
+                    <th className="px-4 py-3 hidden lg:table-cell">
+                      Dirección
+                    </th>
                     <th className="px-4 py-3">Total</th>
                     <th className="px-4 py-3 hidden sm:table-cell">
                       Fecha
@@ -203,6 +209,12 @@ export default function AdminPage() {
                     <tr key={o._id}>
                       <td className="px-4 py-2 font-medium">
                         {o.customer?.name ?? "—"}
+                      </td>
+                      <td className="px-4 py-2 hidden md:table-cell text-stone-600">
+                        {o.customer?.phone ?? "—"}
+                      </td>
+                      <td className="px-4 py-2 hidden lg:table-cell text-stone-600">
+                        {o.customer?.address ?? "—"}
                       </td>
                       <td className="px-4 py-2 text-red-700 font-semibold">
                         ${(o.total ?? 0).toLocaleString()}

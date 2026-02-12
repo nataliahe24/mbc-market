@@ -50,14 +50,18 @@ export async function POST(req: Request) {
 
   const result = await db.collection("orders").insertOne(order);
 
-  /* ---- Enviar email al admin ---- */
-  await sendOrderEmail({
-    orderId: result.insertedId.toString(),
-    customer,
-    items,
-    paymentMethod,
-    total,
-  });
+  /* ---- Enviar email al admin (no bloquea el pedido si falla) ---- */
+  try {
+    await sendOrderEmail({
+      orderId: result.insertedId.toString(),
+      customer,
+      items,
+      paymentMethod,
+      total,
+    });
+  } catch (err) {
+    console.error("Error al enviar email:", err);
+  }
 
   return NextResponse.json(
     { id: result.insertedId.toString() },
