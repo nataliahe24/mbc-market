@@ -94,10 +94,10 @@ export function CartDrawer({ open, onClose }: Props) {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="flex flex-1 flex-col overflow-hidden"
+            className="flex flex-1 flex-col overflow-y-auto"
           >
             {/* Items */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="p-4 space-y-3">
               {items.map((item) => (
                 <div
                   key={item.productId}
