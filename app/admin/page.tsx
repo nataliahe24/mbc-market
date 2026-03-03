@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -17,6 +18,7 @@ import {
 import type { Product } from "@/lib/types";
 
 export default function AdminPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(false);
@@ -35,6 +37,11 @@ export default function AdminPage() {
   async function fetchOrders() {
     const res = await fetch("/api/orders");
     if (res.ok) setOrders(await res.json());
+  }
+
+  async function handleLogout() {
+    await fetch("/api/admin/logout", { method: "POST" });
+    router.push("/admin-login");
   }
 
   useEffect(() => {
@@ -69,13 +76,22 @@ export default function AdminPage() {
               Admin
             </span>
           </div>
-          <Link
-            href="/"
-            className="flex items-center gap-1 text-sm text-stone-500 hover:text-stone-800"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver a la tienda
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="flex items-center gap-1 text-sm text-stone-500 hover:text-stone-800"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Volver a la tienda
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="text-xs font-medium text-red-600 hover:text-red-700"
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </div>
       </header>
 
