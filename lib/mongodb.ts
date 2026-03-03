@@ -8,7 +8,12 @@ let cached: { client: MongoClient; db: Db } | null = null;
 export async function getDb(): Promise<Db> {
   if (cached) return cached.db;
 
-  const client = new MongoClient(uri);
+  const client = new MongoClient(uri, {
+    tls: true,
+    tlsAllowInvalidCertificates: true,
+    serverSelectionTimeoutMS: 10_000,
+    connectTimeoutMS: 10_000,
+  });
   await client.connect();
   const db = client.db(dbName);
   cached = { client, db };

@@ -35,7 +35,7 @@ export function ProductCard({ product }: { product: Product }) {
 
         <div className="mt-auto flex items-center justify-between pt-4">
           <span className="text-lg font-bold text-red-700">
-            ${product.price.toLocaleString()}
+            ${new Intl.NumberFormat("es-CO").format(product.price)}
           </span>
           <button
             onClick={() => addToCart(product)}
