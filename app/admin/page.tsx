@@ -17,15 +17,34 @@ import {
 } from "lucide-react";
 import type { Product } from "@/lib/types";
 
+type OrderStatus = "pending" | "done";
+
+type AdminOrder = {
+  _id: string;
+  customer: {
+    name: string;
+    phone: string;
+    address: string;
+    neighborhood?: string;
+  };
+  paymentMethod?: string;
+  total: number;
+  status?: OrderStatus;
+  createdAt: string;
+};
+
 export default function AdminPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
-  const [orders, setOrders] = useState<
-    { _id: string; customer: { name: string; phone: string; address: string }; total: number; createdAt: string }[]
-  >([]);
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [activeTab, setActiveTab] = useState<
+    "dashboard" | "products" | "orders"
+  >("dashboard");
+  const [showAllOrders, setShowAllOrders] =
+    useState(false);
 
   async function fetchProducts() {
     const res = await fetch("/api/products");
@@ -39,9 +58,38 @@ export default function AdminPage() {
     if (res.ok) setOrders(await res.json());
   }
 
+  async function handleStatusChange(
+    id: string,
+    status: OrderStatus,
+  ) {
+    const res = await fetch(`/api/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+
+    if (!res.ok) {
+      console.error("No se pudo actualizar estado");
+      return;
+    }
+
+    setOrders((prev) =>
+      prev.map((o) =>
+        o._id === id ? { ...o, status } : o,
+      ),
+    );
+  }
+
   async function handleLogout() {
     await fetch("/api/admin/logout", { method: "POST" });
     router.push("/admin-login");
+  }
+
+  function scrollToSection(id: string) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   useEffect(() => {
@@ -66,69 +114,136 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[#f9fafb]">
       {/* Top bar */}
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+      <header className="border-b bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <div className="flex items-center gap-2">
-            <Cookie className="h-6 w-6 text-red-600" />
-            <span className="font-bold text-lg text-stone-900">
-              Admin
-            </span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 text-white text-sm font-semibold">
+              M
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-stone-900">
+                MBC Marketplace
+              </span>
+              <span className="text-[11px] text-stone-400">
+                Panel interno
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="flex items-center gap-1 text-sm text-stone-500 hover:text-stone-800"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Volver a la tienda
-            </Link>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="text-xs font-medium text-red-600 hover:text-red-700"
-            >
-              Cerrar sesión
-            </button>
+          <div className="flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-4 text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("dashboard");
+                  scrollToSection("admin-dashboard");
+                }}
+                className={
+                  activeTab === "dashboard"
+                    ? "rounded-full bg-red-50 px-3 py-1 text-red-600"
+                    : "rounded-full px-3 py-1 text-stone-500 hover:text-stone-800"
+                }
+              >
+                Dashboard
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("products");
+                  scrollToSection("admin-products");
+                }}
+                className={
+                  activeTab === "products"
+                    ? "rounded-full bg-red-50 px-3 py-1 text-red-600"
+                    : "rounded-full px-3 py-1 text-stone-500 hover:text-stone-800"
+                }
+              >
+                Productos
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("orders");
+                  scrollToSection("admin-orders");
+                }}
+                className={
+                  activeTab === "orders"
+                    ? "rounded-full bg-red-50 px-3 py-1 text-red-600"
+                    : "rounded-full px-3 py-1 text-stone-500 hover:text-stone-800"
+                }
+              >
+                Pedidos
+              </button>
+            </nav>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/"
+                className="hidden sm:inline-flex items-center gap-1 text-xs text-stone-500 hover:text-stone-800"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Portal clientes
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="text-xs font-semibold text-red-600 hover:text-red-700"
+              >
+                Cerrar sesión
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8 space-y-8">
-        {/* Stats */}
-        <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard
-            icon={<Cookie className="h-5 w-5" />}
-            label="Productos"
-            value={products.length}
-          />
-          <StatCard
-            icon={<ShoppingCart className="h-5 w-5" />}
-            label="Pedidos"
-            value={orders.length}
-          />
-          <StatCard
-            icon={<Users className="h-5 w-5" />}
-            label="Ingresos"
-            value={`$${orders
-              .reduce((s, o) => s + (o.total ?? 0), 0)
-              .toLocaleString()}`}
-          />
-        </div>
+      <main className="mx-auto max-w-6xl px-6 py-8 space-y-8">
+        {/* Header + stats */}
+        <section
+          id="admin-dashboard"
+          className="space-y-6"
+        >
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl font-bold text-stone-900">
+              Panel de Administración
+            </h1>
+            <p className="text-sm text-stone-500">
+              Resumen detallado de ventas y operaciones del
+              marketplace.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <StatCard
+              icon={<Cookie className="h-5 w-5" />}
+              label="Productos"
+              value={products.length}
+            />
+            <StatCard
+              icon={<ShoppingCart className="h-5 w-5" />}
+              label="Pedidos"
+              value={orders.length}
+            />
+            <StatCard
+              icon={<Users className="h-5 w-5" />}
+              label="Ingresos"
+              value={`$${orders
+                .reduce((s, o) => s + (o.total ?? 0), 0)
+                .toLocaleString()}`}
+            />
+          </div>
+        </section>
 
         {/* Products section */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-stone-900">
-              Productos
+        <section id="admin-products" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[24px] leading-[32px] font-bold text-[#0f172a]">
+              Gestión de Productos
             </h2>
             <button
               onClick={openCreate}
-              className="flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+              className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-red-700"
             >
-              <Plus className="h-4 w-4" />
-              Agregar
+              <Plus className="h-3.5 w-3.5" />
+              Agregar producto
             </button>
           </div>
 
@@ -199,10 +314,21 @@ export default function AdminPage() {
 
         {/* Recent orders */}
         {orders.length > 0 && (
-          <section>
-            <h2 className="text-xl font-bold text-stone-900 mb-4">
-              Pedidos recientes
-            </h2>
+          <section id="admin-orders">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-[24px] leading-[32px] font-bold text-[#0f172a]">
+                Pedidos recientes
+              </h2>
+              {orders.length > 10 && !showAllOrders && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllOrders(true)}
+                  className="text-xs font-medium text-red-600 hover:text-red-700"
+                >
+                  Ver todo el historial →
+                </button>
+              )}
+            </div>
             <div className="overflow-x-auto rounded-xl border bg-white">
               <table className="w-full text-sm">
                 <thead className="bg-stone-50 text-left text-stone-500">
@@ -214,6 +340,13 @@ export default function AdminPage() {
                     <th className="px-4 py-3 hidden lg:table-cell">
                       Dirección
                     </th>
+                    <th className="px-4 py-3 hidden xl:table-cell">
+                      Barrio
+                    </th>
+                    <th className="px-4 py-3 hidden sm:table-cell">
+                      Medio de pago
+                    </th>
+                    <th className="px-4 py-3">Estado</th>
                     <th className="px-4 py-3">Total</th>
                     <th className="px-4 py-3 hidden sm:table-cell">
                       Fecha
@@ -221,7 +354,10 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {orders.slice(0, 10).map((o) => (
+                  {(showAllOrders
+                    ? orders
+                    : orders.slice(0, 10)
+                  ).map((o) => (
                     <tr key={o._id}>
                       <td className="px-4 py-2 font-medium">
                         {o.customer?.name ?? "—"}
@@ -231,6 +367,24 @@ export default function AdminPage() {
                       </td>
                       <td className="px-4 py-2 hidden lg:table-cell text-stone-600">
                         {o.customer?.address ?? "—"}
+                      </td>
+                      <td className="px-4 py-2 hidden xl:table-cell text-stone-600">
+                        {o.customer?.neighborhood ?? "—"}
+                      </td>
+                      <td className="px-4 py-2 hidden sm:table-cell text-stone-600">
+                        {o.paymentMethod === "cash"
+                          ? "Efectivo"
+                          : o.paymentMethod === "transfer"
+                          ? "Transferencia"
+                          : "—"}
+                      </td>
+                      <td className="px-4 py-2">
+                        <StatusBadge
+                          value={o.status ?? "pending"}
+                          onChange={(value) =>
+                            handleStatusChange(o._id, value)
+                          }
+                        />
                       </td>
                       <td className="px-4 py-2 text-red-700 font-semibold">
                         ${(o.total ?? 0).toLocaleString()}
@@ -276,17 +430,49 @@ function StatCard({
   value: string | number;
 }) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border bg-white p-4">
-      <div className="rounded-lg bg-red-50 p-2 text-red-600">
+    <div className="flex items-center gap-4 rounded-2xl border border-stone-100 bg-white px-5 py-4 shadow-sm">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600">
         {icon}
       </div>
-      <div>
-        <p className="text-sm text-stone-500">{label}</p>
-        <p className="text-xl font-bold text-stone-900">
+      <div className="flex flex-col">
+        <p className="text-xs text-stone-500">{label}</p>
+        <p className="text-xl font-bold text-stone-900 leading-tight">
           {value}
         </p>
       </div>
     </div>
+  );
+}
+
+/* ---------- Status badge ---------- */
+function StatusBadge({
+  value,
+  onChange,
+}: {
+  value: OrderStatus;
+  onChange: (value: OrderStatus) => void;
+}) {
+  const isDone = value === "done";
+  const base =
+    "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium";
+  const cls = isDone
+    ? `${base} bg-emerald-50 text-emerald-700`
+    : `${base} bg-red-50 text-red-700`;
+
+  const next: OrderStatus = isDone ? "pending" : "done";
+
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(next)}
+      className={cls}
+    >
+      <span
+        className="h-1.5 w-1.5 rounded-full bg-current"
+        aria-hidden="true"
+      />
+      {isDone ? "Finalizado" : "Pendiente"}
+    </button>
   );
 }
 

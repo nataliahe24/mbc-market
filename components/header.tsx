@@ -19,7 +19,7 @@ export function Header() {
             className="flex items-center gap-2 text-red-800 font-bold text-xl"
           >
             <Cookie className="h-6 w-6 text-red-600" />
-            MBC Marketplace
+            Mi Buñuelo Cúcuta
           </Link>
 
           <nav className="flex items-center gap-3">
