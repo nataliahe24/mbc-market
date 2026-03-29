@@ -1,10 +1,18 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import nodemailer from "nodemailer";
 import type { CartItem } from "@/lib/types";
+import { requireAdminSession } from "@/lib/admin-session";
 
 /** GET /api/orders — lista todas las órdenes */
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const unauthorized = requireAdminSession(req);
+
+  if (unauthorized) {
+    return unauthorized;
+  }
+
   const db = await getDb();
   const docs = await db
     .collection("orders")
@@ -104,6 +112,8 @@ async function sendOrderEmail(data: EmailData) {
     secure: false,
     auth: { user, pass },
   });
+  
+  await transporter.verify();
 
   const itemRows = data.items
     .map(

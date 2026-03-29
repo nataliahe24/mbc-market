@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
+import { requireAdminSession } from "@/lib/admin-session";
 
 type OrderStatus = "pending" | "done";
 
@@ -12,6 +13,12 @@ export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
+  const unauthorized = requireAdminSession(req);
+
+  if (unauthorized) {
+    return unauthorized;
+  }
+
   const { id } = await context.params;
 
   if (!ObjectId.isValid(id)) {

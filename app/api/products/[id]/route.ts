@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
+import { requireAdminSession } from "@/lib/admin-session";
 
 interface Ctx {
   params: Promise<{ id: string }>;
@@ -31,7 +32,13 @@ export async function GET(_req: Request, ctx: Ctx) {
 }
 
 /** PUT /api/products/:id — actualiza un producto */
-export async function PUT(req: Request, ctx: Ctx) {
+export async function PUT(req: NextRequest, ctx: Ctx) {
+  const unauthorized = requireAdminSession(req);
+
+  if (unauthorized) {
+    return unauthorized;
+  }
+
   const { id } = await ctx.params;
   const body = await req.json();
   const { name, description, price, image } = body;
@@ -55,7 +62,13 @@ export async function PUT(req: Request, ctx: Ctx) {
 }
 
 /** DELETE /api/products/:id — elimina un producto */
-export async function DELETE(_req: Request, ctx: Ctx) {
+export async function DELETE(req: NextRequest, ctx: Ctx) {
+  const unauthorized = requireAdminSession(req);
+
+  if (unauthorized) {
+    return unauthorized;
+  }
+
   const { id } = await ctx.params;
   const db = await getDb();
   await db

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { getDb } from "@/lib/mongodb";
+import { requireAdminSession } from "@/lib/admin-session";
 
 /** GET /api/products — lista todos los productos */
 export async function GET() {
@@ -22,7 +24,13 @@ export async function GET() {
 }
 
 /** POST /api/products — crea un producto */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const unauthorized = requireAdminSession(req);
+
+  if (unauthorized) {
+    return unauthorized;
+  }
+
   const body = await req.json();
   const { name, description, price, image } = body;
 
