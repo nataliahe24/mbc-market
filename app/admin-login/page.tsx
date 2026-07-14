@@ -58,7 +58,7 @@ function AdminLoginContent() {
           <div className="mb-4 text-center">
             <div className="inline-flex flex-col items-center justify-center rounded-full px-3 py-2">
               <Image
-                src="/image/logo.png"
+                src="/logo/logo.png"
                 alt="Logo de la empresa"
                 width={95}
                 height={95}

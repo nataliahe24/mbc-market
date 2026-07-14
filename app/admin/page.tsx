@@ -125,7 +125,7 @@ export default function AdminPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
             <Image
-              src="/image/logo.png"
+              src="/logo/logo.png"
               alt="Logo de la empresa"
               width={50}
               height={50}
@@ -497,6 +497,31 @@ function ProductModal({
   const [saving, setSaving] = useState(false);
   const isEdit = product !== null;
 
+  const [images, setImages] = useState<string[]>([]);
+  const [mode, setMode] = useState<"url" | "local">("url");
+  const [selectedLocal, setSelectedLocal] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/images")
+      .then((r) => r.json())
+      .then((data) => setImages(data || []))
+      .catch(() => setImages([]));
+  }, []);
+
+  useEffect(() => {
+    if (product?.image) {
+      if (product.image.startsWith("/image/")) {
+        setMode("local");
+        setSelectedLocal(product.image);
+      } else {
+        setMode("url");
+      }
+    } else {
+      setMode("url");
+      setSelectedLocal(null);
+    }
+  }, [product]);
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
@@ -566,17 +591,73 @@ function ProductModal({
             defaultValue={product?.price?.toString()}
             required
           />
-          <Field
-            name="image"
-            label="URL de imagen"
-            defaultValue={product?.image}
-            placeholder="https://..."
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-1">
+              Imagen
+            </label>
+
+            <div className="mb-2 flex gap-3">
+              <label className="inline-flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="imageMode"
+                  checked={mode === "local"}
+                  onChange={() => setMode("local")}
+                />
+                Seleccionar imagen local
+              </label>
+              <label className="inline-flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="imageMode"
+                  checked={mode === "url"}
+                  onChange={() => setMode("url")}
+                />
+                Usar URL
+              </label>
+            </div>
+
+            {mode === "url" ? (
+              <input
+                name="image"
+                type="text"
+                defaultValue={product?.image && !product.image.startsWith("/image/") ? product.image : ""}
+                placeholder="https://..."
+                required
+                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+              />
+            ) : (
+              <>
+                <input name="image" type="hidden" value={selectedLocal ?? ""} />
+                <div className="grid grid-cols-4 gap-2 max-h-48 overflow-auto">
+                  {images.length === 0 ? (
+                    <p className="text-stone-400 text-sm">No hay imágenes locales</p>
+                  ) : (
+                    images.map((img) => (
+                      <button
+                        type="button"
+                        key={img}
+                        onClick={() => setSelectedLocal(img)}
+                        className={`rounded-md border p-0.5 ${selectedLocal === img ? "border-red-600" : "border-transparent"}`}
+                      >
+                        <img
+                          src={img}
+                          alt="img"
+                          className="h-16 w-16 object-cover rounded-md"
+                        />
+                      </button>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+          </div>
 
           <button
             type="submit"
-            disabled={saving}
+            disabled={
+              saving || (mode === "local" && !selectedLocal)
+            }
             className="w-full rounded-lg bg-red-600 py-2.5 font-semibold text-white hover:bg-red-700 disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {saving && (

@@ -20,7 +20,7 @@ export function Header() {
             className="inline-flex items-center gap-3 text-red-800 font-bold text-xl"
           >
             <Image
-              src="/image/logo.png"
+              src="/logo/logo.png"
               alt="Logo de la empresa"
               width={60}
               height={60}
