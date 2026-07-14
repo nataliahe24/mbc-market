@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, LogIn, Cookie } from "lucide-react";
+import { ShoppingCart, LogIn } from "lucide-react";
 import { useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { useState } from "react";
@@ -16,10 +17,19 @@ export function Header() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-red-800 font-bold text-xl"
+            className="inline-flex items-center gap-3 text-red-800 font-bold text-xl"
           >
-            <Cookie className="h-6 w-6 text-red-600" />
-            Mi Buñuelo Cúcuta
+            <Image
+              src="/image/logo.png"
+              alt="Logo de la empresa"
+              width={60}
+              height={60}
+              className="rounded-full"
+            />
+            <span className="whitespace-nowrap text-2xl font-extrabold uppercase tracking-tight text-stone-900">
+              Mi Buñuelo&nbsp;
+              <span className="text-red-600">Cúcuta</span>
+            </span>
           </Link>
 
           <nav className="flex items-center gap-3">

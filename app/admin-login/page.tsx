@@ -2,6 +2,7 @@
 
 import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { Cookie } from "lucide-react";
 
@@ -53,20 +54,29 @@ function AdminLoginContent() {
   return (
     <main className="min-h-screen bg-stone-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="mb-6 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <Cookie className="h-6 w-6 text-red-600" />
-            <div className="text-left">
-              <p className="text-sm font-semibold text-red-700 uppercase tracking-wide">
-                Mi Buñuelo Cúcuta
-              </p>
+        <div className="rounded-2xl bg-white shadow-md p-5 sm:p-6">
+          <div className="mb-4 text-center">
+            <div className="inline-flex flex-col items-center justify-center rounded-full px-3 py-2">
+              <Image
+                src="/image/logo.png"
+                alt="Logo de la empresa"
+                width={95}
+                height={95}
+                className="rounded-full"
+              />
+              <div className="mt-3 text-center">
+                <p className="text-3xl font-extrabold uppercase tracking-tight text-stone-900">
+                  Mi Buñuelo
+                </p>
+                <p className="text-4xl font-extrabold uppercase tracking-tight text-red-600">
+                  Cúcuta
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="rounded-2xl bg-white shadow-md p-6 sm:p-8">
-          <header className="mb-6 text-center">
-            <h1 className="text-lg sm:text-xl font-bold text-stone-900">
+          <header className="mb-4 text-center">
+            <h1 className="text-base sm:text-lg font-bold text-stone-900">
               Acceso Administrador
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-stone-500">

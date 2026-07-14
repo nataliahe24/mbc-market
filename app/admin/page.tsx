@@ -123,16 +123,18 @@ export default function AdminPage() {
       {/* Top bar */}
       <header className="border-b bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 text-white text-sm font-semibold">
-              M
-            </div>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/image/logo.png"
+              alt="Logo de la empresa"
+              width={50}
+              height={50}
+              className="rounded-full"
+            />
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-stone-900">
-                MBC Marketplace
-              </span>
-              <span className="text-[11px] text-stone-400">
-                Panel interno
+              <span className="text-md font-extrabold uppercase tracking-tight text-stone-900">
+                Mi Buñuelo&nbsp;
+                <span className="text-red-600">Cúcuta</span>
               </span>
             </div>
           </div>
