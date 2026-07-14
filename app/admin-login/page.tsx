@@ -3,6 +3,7 @@
 import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Cookie } from "lucide-react";
 
 type FormState = {
   loading: boolean;
@@ -54,9 +55,7 @@ function AdminLoginContent() {
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
           <div className="flex items-center justify-center gap-2">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-red-600 text-white text-lg font-bold">
-              MB
-            </span>
+            <Cookie className="h-6 w-6 text-red-600" />
             <div className="text-left">
               <p className="text-sm font-semibold text-red-700 uppercase tracking-wide">
                 Mi Buñuelo Cúcuta
