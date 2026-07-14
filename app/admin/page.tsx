@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { ProtectedRoute } from "@/components/protected-route";
 import {
   Plus,
   Pencil,
@@ -81,8 +82,11 @@ export default function AdminPage() {
   }
 
   async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.push("/admin-login");
+    await fetch("/api/admin/logout", { method: "POST", cache: "no-store" });
+    sessionStorage.removeItem("adminSession");
+    localStorage.removeItem("adminSession");
+    router.replace("/admin-login");
+    window.location.replace("/admin-login");
   }
 
   function scrollToSection(id: string) {
@@ -114,6 +118,7 @@ export default function AdminPage() {
   }
 
   return (
+    <ProtectedRoute>
     <div className="min-h-screen bg-[#f9fafb]">
       {/* Top bar */}
       <header className="border-b bg-white/90 backdrop-blur">
@@ -416,6 +421,7 @@ export default function AdminPage() {
         />
       )}
     </div>
+    </ProtectedRoute>
   );
 }
 

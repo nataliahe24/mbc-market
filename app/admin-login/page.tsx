@@ -1,7 +1,7 @@
 "use client";
 
+import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, type FormEvent } from "react";
 import Link from "next/link";
 
 type FormState = {
@@ -9,7 +9,7 @@ type FormState = {
   error: string | null;
 };
 
-export default function AdminLoginPage() {
+function AdminLoginContent() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") ?? "/admin";
@@ -164,6 +164,14 @@ export default function AdminLoginPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-stone-100" />}> 
+      <AdminLoginContent />
+    </Suspense>
   );
 }
 
