@@ -55,8 +55,15 @@ export function CartDrawer({ open, onClose }: Props) {
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("Error al enviar pedido");
-      setSuccess(true);
+      // clear cart and reload page immediately so UI resets
       clearCart();
+      try {
+        window.location.reload();
+        return;
+      } catch (e) {
+        // fallback to success state if reload fails
+        setSuccess(true);
+      }
     } catch {
       alert("No se pudo enviar el pedido. Intenta de nuevo.");
     } finally {
